@@ -1,0 +1,103 @@
+import numpy as np
+import matplotlib.pyplot as plt
+%matplotlib inline
+x1 = [1,5,-8]
+x2 = [3,2,1,6,-7]
+y1 = np.arange(1,len(x1)+1,1)
+y2 = np.arange(1,len(x2)+1,1)
+
+plt.plot(y1,x1,'yd-', label = 'Funcion x1[t]')
+plt.plot(y2,x2,'rd-',label = 'Funcion x2[t]')
+plt.title('Funciones originales')
+plt.grid()
+plt.axhline(y=0, xmin=0, xmax=1, label = 'Ejes coordenados')
+plt.axvline(x=0, ymin=0, ymax=1)
+plt.xlabel('Tiempo[s]')
+plt.ylabel('Amplitud')
+plt.legend()
+plt.show()
+
+# Para la convolución es necesario invertir el arreglo
+x1con = np.flip(x1)
+
+#Variable de almacenamiento
+conv1 = 0.
+
+# Doble ciclo for para realizar la convolución
+for i in range(len(x2)):
+    for j in range(len(x1)):
+        conv1 += x2[i]*x1con[j]
+        
+print('El resultado de la convolución es: ',conv1)
+
+#Variable de almacenamiento
+corr1 = 0.
+
+# Doble ciclo for para realizar la convolución
+for i in range(len(x2)):
+    for j in range(len(x1)):
+        corr1 += x2[i]*x1[j]
+        
+print('El resultado de la convolución es: ',conv1)
+
+#Muestreo de la señales
+n = 50
+ti = 0
+tf = 2
+dt = (tf-ti)/n
+t = np.zeros(n+1)
+hm = np.zeros(n+1)
+
+for i in range(n+1):
+    t[i] = ti + i*dt
+    hm[i] = t[i]**3 - 2*t[i]
+    
+x = [-2,-1,0,1,2]
+y = np.arange(1,len(x)+1,1)
+    
+plt.plot(t,hm,'y', label = 'Funcion h(t)')
+plt.plot(x,y,'rd-',label = 'Funcion x(t)')
+plt.title('Funciones originales')
+plt.grid()
+plt.axhline(y=0, xmin=0, xmax=1, label = 'Ejes coordenados')
+plt.axvline(x=0, ymin=0, ymax=1)
+plt.xlabel('Tiempo[s]')
+plt.ylabel('Amplitud')
+plt.legend()
+plt.show()
+
+# Para la convolución es necesario invertir el arreglo
+xcon = np.flip(x)
+
+#Variable de almacenamiento
+conv2 = 0.
+
+# Doble ciclo for para realizar la convolución
+for i in range(len(x)):
+    for j in range(len(hm)):
+        conv2 += xcon[i]*hm[j]
+        
+print('El resultado de la convolución es: ',conv2)
+
+# Convolución de las primeras funciones
+res1 = np.convolve(x1,x2,'full')
+print('El vector resultado es: ',res1)
+
+res2 = np.correlate(x1,x2,'full')
+print('El vector resultado es: ',res2)
+
+res3 = np.convolve(x,hm,'full')
+print('El vector resultado es: ',res3)
+
+print()
+print('Comparación de resultados')
+print('Primera convolución:')
+print('Algoritmo: ',conv1,'------ Función: ',sum(res1))
+
+print()
+print('Primera correlación:')
+print('Algoritmo: ',corr1,'------ Función: ',sum(res2))
+
+print()
+print('Segunda convolución:')
+print('Algoritmo: ',conv2,'------ Función: ',sum(res3))
